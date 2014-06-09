@@ -138,16 +138,25 @@ void dbs_check_cpu(struct dbs_data *dbs_data, int cpu)
 		 * timer would not have fired during CPU-idle periods. Hence
 		 * an unusually large 'wall_time' (as compared to the sampling
 		 * rate) indicates this scenario.
+		 *
+		 * prev_load can be zero in two cases and we must recalculate it
+		 * for both cases:
+		 * - during long idle intervals
+		 * - explicitly set to zero
 		 */
-		if (unlikely(wall_time > (2 * sampling_rate))) {
-			unsigned int busy = wall_time - idle_time;
+		if (unlikely(wall_time > (2 * sampling_rate) &&
+			     j_cdbs->prev_load)) {
+			load = j_cdbs->prev_load;
 
-			if (busy > sampling_rate)
-				load = 100;
-			else
-				load = 100 * busy / sampling_rate;
+			/*
+			 * Perform a destructive copy, to ensure that we copy
+			 * the previous load only once, upon the first wake-up
+			 * from idle.
+			 */
+			j_cdbs->prev_load = 0;
 		} else {
 			load = 100 * (wall_time - idle_time) / wall_time;
+			j_cdbs->prev_load = load;
 		}
 
 		if (load > max_load)
@@ -495,6 +504,11 @@ int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 			j_cdbs->cur_policy = policy;
 			j_cdbs->prev_cpu_idle = get_cpu_idle_time(j,
 					       &j_cdbs->prev_cpu_wall, io_busy);
+
+			prev_load = (unsigned int)
+				(j_cdbs->prev_cpu_wall - j_cdbs->prev_cpu_idle);
+			j_cdbs->prev_load = 100 * prev_load /
+					(unsigned int) j_cdbs->prev_cpu_wall;
 
 			if (ignore_nice)
 				j_cdbs->prev_cpu_nice =
