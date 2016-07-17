@@ -295,7 +295,13 @@ static ssize_t irq_ack(struct device* device,
 	return count;
 }
 static DEVICE_ATTR(irq, S_IRUSR | S_IWUSR, irq_get, irq_ack);
+extern void int_touch(void);
+extern struct completion key_cm;
 extern bool virtual_key_enable;
+extern bool s1302_is_keypad_stopped(void);
+
+bool key_home_pressed = false;
+EXPORT_SYMBOL(key_home_pressed);
 
 static void set_fpc_irq(struct fpc1020_data *fpc1020, bool enable)
 {
@@ -319,12 +325,21 @@ static ssize_t report_home_set(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct  fpc1020_data *fpc1020 = dev_get_drvdata(dev);
+    unsigned long time;
+	bool ignore_keypad;
+
+	if (s1302_is_keypad_stopped() || virtual_key_enable)
+		ignore_keypad = true;
+	else
+		ignore_keypad = false;
 
 	if(ignor_home_for_ESD)
 		return -EINVAL;
 	if (!strncmp(buf, "down", strlen("down")))
 	{
-        if(!virtual_key_enable){
+        if(ignore_keypad){
+                key_home_pressed = true;
+        }else{
             input_report_key(fpc1020->input_dev,
                             KEY_HOME, 1);
             input_sync(fpc1020->input_dev);
@@ -332,22 +347,26 @@ static ssize_t report_home_set(struct device *dev,
 	}
 	else if (!strncmp(buf, "up", strlen("up")))
 	{
-        if(!virtual_key_enable){
+        if(ignore_keypad){
+                key_home_pressed = false;
+        }else{
             input_report_key(fpc1020->input_dev,
                             KEY_HOME, 0);
             input_sync(fpc1020->input_dev);
         }
 	}
-	else if (!strncmp(buf, "timeout", strlen("timeout")))
-	{
-		input_report_key(fpc1020->input_dev,KEY_F2,1);
-		input_sync(fpc1020->input_dev);
-		input_report_key(fpc1020->input_dev,KEY_F2,0);
-		input_sync(fpc1020->input_dev);
-	}
 	else
 		return -EINVAL;
-
+    if(ignore_keypad){
+        if(!key_home_pressed){
+            reinit_completion(&key_cm);
+            time = wait_for_completion_timeout(&key_cm,msecs_to_jiffies(60));
+            if (!time)
+                int_touch();
+        }else{
+            int_touch();
+        }
+    }
 	return count;
 }
 static DEVICE_ATTR(report_home, S_IWUSR, NULL, report_home_set);
@@ -462,16 +481,12 @@ static void fpc1020_suspend_resume(struct work_struct *work)
 	struct fpc1020_data *fpc1020 =
 		container_of(work, typeof(*fpc1020), pm_work);
 
+	/* Escalate fingerprintd priority when screen is off */
 	if (fpc1020->screen_state) {
 		set_fpc_irq(fpc1020, true);
 		set_fingerprintd_nice(0);
 	} else {
-		/*
-		 * Elevate fingerprintd priority when screen is off to ensure
-		 * the fingerprint sensor is responsive and that the haptic
-		 * response on successful verification always fires.
-		 */
-		set_fingerprintd_nice(-1);
+		set_fingerprintd_nice(MIN_NICE);
 	}
 
 	sysfs_notify(&fpc1020->dev->kobj, NULL,
