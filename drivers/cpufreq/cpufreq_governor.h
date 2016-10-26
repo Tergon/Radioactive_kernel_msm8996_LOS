@@ -141,7 +141,8 @@ struct cpu_dbs_common_info {
 	 * Flag to ensure that we copy the previous load only once, upon the
 	 * first wake-up from idle.
 	 */
-	bool copy_prev_load;
+	unsigned int prev_load;
+	unsigned int deferred_periods;
 	struct cpufreq_policy *cur_policy;
 	struct delayed_work work;
 	/*
