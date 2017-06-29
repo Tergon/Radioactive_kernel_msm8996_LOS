@@ -150,6 +150,9 @@ static int dynamic_next_x_max = 0;
 static int dynamic_next_y_min = 0;
 static int dynamic_next_y_max = 0;
 
+// 1=sweep right, 2=sweep left, 3=both, 0=disabled
+static int s2s_switch = 0;
+
 static struct notifier_block s2s_lcd_notif;
 static struct workqueue_struct *s2s_input_wq;
 static struct work_struct s2s_input_work;
