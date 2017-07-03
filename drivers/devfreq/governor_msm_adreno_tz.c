@@ -475,6 +475,11 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 
 	/* Update the GPU load statistics */
 	compute_work_load(&stats, priv, devfreq);
+	if (!is_display_on()) {
+		*freq = devfreq->min_freq;
+		return 0;
+	}
+
 	/*
 	 * Do not waste CPU cycles running this algorithm if
 	 * the GPU just started, or if less than FLOOR time
