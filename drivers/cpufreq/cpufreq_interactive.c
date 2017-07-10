@@ -109,7 +109,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 				break;
 		}
 	}
-	return 0;
+	return NOTIFY_OK;
 }
 
 /* Target load.  Lower values result in higher CPU speeds. */
@@ -508,7 +508,9 @@ static void cpufreq_interactive_timer(unsigned long data)
 	int cpu, i;
 	int new_load_pct = 0;
 	int prev_l, pred_l = 0;
+#if defined(CONFIG_MSM_PERFORMANCE) || defined(CONFIG_SCHED_CORE_CTL)
 	struct cpufreq_govinfo govinfo;
+#endif
 	bool skip_hispeed_logic, skip_min_sample_time;
 	bool jump_to_max_no_ts = false;
 	bool jump_to_max = false;
@@ -517,6 +519,8 @@ static void cpufreq_interactive_timer(unsigned long data)
 		return;
 	if (!ppol->governor_enabled)
 		goto exit;
+	if (ppol->policy->min == ppol->policy->max)
+		goto rearm;
 
 	now = ktime_to_us(ktime_get());
 
@@ -716,6 +720,7 @@ rearm:
 	if (!timer_pending(&ppol->policy_timer))
 		cpufreq_interactive_timer_resched(data, false);
 
+#if defined(CONFIG_MSM_PERFORMANCE) || defined(CONFIG_SCHED_CORE_CTL)
 	/*
 	 * Send govinfo notification.
 	 * Govinfo notification could potentially wake up another thread
@@ -731,6 +736,7 @@ rearm:
 		atomic_notifier_call_chain(&cpufreq_govinfo_notifier_list,
 					   CPUFREQ_LOAD_CHANGE, &govinfo);
 	}
+#endif
 
 exit:
 	up_read(&ppol->enable_sem);
