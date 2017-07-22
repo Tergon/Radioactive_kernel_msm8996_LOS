@@ -547,6 +547,9 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
 	} else if (is_swap_pte(*pte)) {
 		swp_entry_t swpent = pte_to_swp_entry(*pte);
 
+		if (!non_swap_entry(swpent)) {
+			int mapcount;
+
 		if (!non_swap_entry(swpent))
 			mss->swap += PAGE_SIZE;
 		else if (is_migration_entry(swpent))
