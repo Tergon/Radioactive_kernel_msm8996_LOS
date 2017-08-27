@@ -136,11 +136,13 @@ struct cpu_dbs_common_info {
 	u64 prev_cpu_idle;
 	u64 prev_cpu_wall;
 	u64 prev_cpu_nice;
-	unsigned int prev_load;
-	/*
-	 * Flag to ensure that we copy the previous load only once, upon the
-	 * first wake-up from idle.
-	 */
+	unsigned int deferred_periods;
+ 	/*
+ 	 * Used to keep track of load in the previous interval. However, when
+ 	 * explicitly set to zero, it is used as a flag to ensure that we copy
+ 	 * the previous load to the current interval only once, upon the first
+ 	 * wake-up from idle.
+ 	 */
 	bool copy_prev_load;
 	struct cpufreq_policy *cur_policy;
 	struct delayed_work dwork;
@@ -209,6 +211,12 @@ struct cs_dbs_tuners {
  	unsigned int boost_enabled;
  	unsigned int boost_count;
     unsigned int boost_ceiling;
+	unsigned int input_boost_freq;
+	unsigned int input_boost_duration;
+	unsigned int twostep_threshold;
+	unsigned int min_load;
+	unsigned int twostep_counter;
+	u64 twostep_time;
 };
 
 struct ex_dbs_tuners {
