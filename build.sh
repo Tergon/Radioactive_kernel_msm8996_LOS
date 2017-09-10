@@ -38,6 +38,9 @@ ZIP_MOVE="$BUILD_DIR/Releases"
 # Builder script headline
 HEADLINE_TXT="Advanced kernel builder script by acuicultor"
 
+# Speed up build process
+MAKE="./makeparallel"
+
 # Enable/Disable output folder cleanup dialog
 OUTPUT_EMPTY_CHECK="1"
 
