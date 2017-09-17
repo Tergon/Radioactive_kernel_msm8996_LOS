@@ -74,11 +74,6 @@ static unsigned long cma_bitmap_aligned_offset(const struct cma *cma,
 		>> cma->order_per_bit;
 }
 
-static unsigned long cma_bitmap_maxno(struct cma *cma)
-{
-	return cma->count >> cma->order_per_bit;
-}
-
 static unsigned long cma_bitmap_pages_to_bits(const struct cma *cma,
 					      unsigned long pages)
 {
@@ -337,6 +332,9 @@ int __init cma_declare_contiguous(phys_addr_t base,
 				goto err;
 			}
 		}
+
+		if (addr < highmem_start)
+			kmemleak_no_scan(__va(addr));
 
 		/*
 		 * kmemleak scans/reads tracked objects for pointers to other
