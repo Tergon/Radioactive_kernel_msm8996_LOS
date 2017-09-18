@@ -297,8 +297,8 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fno-inline-functions -fomit-frame-pointer -std=gnu89
-HOSTCXXFLAGS = -Ofast -fno-inline-functions -fgcse-las -pipe
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fno-inline-functions -fomit-frame-pointer -std=gnu89
+HOSTCXXFLAGS = -O2 -fno-inline-functions -fgcse-las -pipe
 
 ifeq ($(shell $(HOSTCC) -v 2>&1 | grep -c "clang version"), 1)
 HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
@@ -408,18 +408,7 @@ KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-memset-transposed-args -Wno-bool-compare -Wno-logical-not-parentheses -Wno-parentheses -Wno-discarded-array-qualifiers \
 		   -Wno-bool-operation -Wno-int-in-bool-context -Wno-switch-unreachable \
 		   -Wno-unused-const-variable -Wno-array-bounds -Wno-incompatible-pointer-types -Wno-misleading-indentation -Wno-tautological-compare -Wno-error=misleading-indentation
-
-KBUILD_CFLAGS	+= -Ofast -g0 -DNDEBUG \
-		   -fgraphite \
-		   -fgraphite-identity \
-		   -fivopts \
-		   -floop-block \
-		   -floop-interchange \
-		   -floop-strip-mine \
-		   -fomit-frame-pointer \
-		   -ftree-loop-distribution \
-		   -ftree-loop-linear
-	   
+		   
 # Optimization for Kryo
 KBUILD_CFLAGS	+= -mcpu=cortex-a57+crc+crypto
 
