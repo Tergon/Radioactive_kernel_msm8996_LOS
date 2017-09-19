@@ -2272,6 +2272,7 @@ static inline void *f2fs_kmalloc(struct f2fs_sb_info *sbi,
 	return kmalloc(size, flags);
 }
 
+#ifndef FUNC_KVMALLOC
 static inline void *kvmalloc(size_t size, gfp_t flags)
 {
 	void *ret;
@@ -2281,7 +2282,9 @@ static inline void *kvmalloc(size_t size, gfp_t flags)
 		ret = __vmalloc(size, flags, PAGE_KERNEL);
 	return ret;
 }
+#endif
 
+#ifndef FUNC_KVZALLOC
 static inline void *kvzalloc(size_t size, gfp_t flags)
 {
 	void *ret;
@@ -2291,6 +2294,7 @@ static inline void *kvzalloc(size_t size, gfp_t flags)
 		ret = __vmalloc(size, flags | __GFP_ZERO, PAGE_KERNEL);
 	return ret;
 }
+#endif
 
 #define get_inode_mode(i) \
 	((is_inode_flag_set(i, FI_ACL_MODE)) ? \
