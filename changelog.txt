@@ -1,5 +1,13 @@
 
 Project name: Radioactive_kernel_msm8996_LOS
+  * Defconfig: enable ARM64 cpuidle (acuicultor) [3ea6523]
+  * kernel: Nuke GENTLE_FAIR_SLEEPERS sysfs (Harsh Shandilya) [a4b7c80]
+  * f2fs: Protect against redefinition of kv[m,z]alloc (Harsh Shandilya) [7e9bbb2]
+  * BACKPORT: mm, vmalloc: fix vmalloc users tracking properly (Michal Hocko) [ff33c66]
+  * UPSTREAM: mm, vmalloc: properly track vmalloc users (Michal Hocko) [94d4dda]
+  * CHROMIUM: mm: Take kvmalloc_array() from upstream (Tomasz Figa) [5f7cb52]
+  * BACKPORT: mm: introduce kv[mz]alloc helpers (Michal Hocko) [c8228d0]
+  * Update build version (acuicultor) [321aaf2]
   * [TESTING]Makefile: return to Ofast and Graphite (reverted from commit 34e7fe9429880a56e135eb598d4f473c89fe2f47) (acuicultor) [c5781c7]
   * mdss: Update RT priority (Alex Naidis) [16e77a2]
   * DTS: panel: enable ULPS suspend mode (Alex Naidis) [2d09353]
