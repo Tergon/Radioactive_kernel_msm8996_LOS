@@ -402,8 +402,13 @@ KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -std=gnu89
-
+		   -fgcse-sm -fsched-spec-load \
+		   -fsingle-precision-constant \
+		   -std=gnu89 \
+		   -Wno-memset-transposed-args -Wno-bool-compare -Wno-logical-not-parentheses -Wno-parentheses -Wno-discarded-array-qualifiers \
+		   -Wno-bool-operation -Wno-int-in-bool-context -Wno-switch-unreachable \
+		   -Wno-unused-const-variable -Wno-array-bounds -Wno-incompatible-pointer-types -Wno-misleading-indentation -Wno-tautological-compare -Wno-error=misleading-indentation
+		   
 # Optimization for Kryo
 KBUILD_CFLAGS	+= -mcpu=cortex-a57+crc+crypto
 
