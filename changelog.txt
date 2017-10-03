@@ -1,5 +1,16 @@
 
 Project name: Radioactive_kernel_msm8996_LOS
+  * kernel: Nuke GENTLE_FAIR_SLEEPERS sysfs (Harsh Shandilya) [10e0fed]
+  * CHROMIUM: PM / QoS: add min/max online cpus as PM QoS parameter (Joseph Lo) [952c5a12]
+  * CHROMIUM: sched: update the average of nr_running (Joseph Lo) [4240ba22]
+  * kernel/fs: fix I/O wait not accounted for RW O_DSYNC (Stephane Gasparini) [bdc5e01]
+  * kernel: Unfuck sched fair sleepers and arch power sysfs (Harsh Shandilya) [dc0ad7d]
+  * Enable Arch Power & Capacity (Kiran Anto) [8d1611a]
+  * Add Arch Power and Gentle Fair Sleepers Interface (Chet Kener) [d8af47b]
+  * sched: Add SysInterface for GENTLE_FAIR_SLEEPERS (Pranav Vashi) [3a66253f]
+  * Revert "qcom-cpufreq: Use CLKFLAG_NO_RATE_CACHE" (acuicultor) [fb9ef5d]
+  * Revert "clk: msm: clock-cpu-8996: Use CLKFLAG_NO_RATE_CACHE for perfcl_hf_mux" (acuicultor) [ea939a0]
+  * Update build version (acuicultor) [3a9d9ae]
   * UPSTREAM: PM / sleep: make PM notifiers called symmetrically (Lianwei Wang) [c7d3942]
   * PM / sleep: fix device reference leak in test_suspend (Johan Hovold) [ff4986a]
   * PM / hibernate: Fix rtree_next_node() to avoid walking off list ends (James Morse) [d42f8d4]
@@ -2308,5 +2319,4 @@ Project name: Radioactive_kernel_msm8996_LOS
   * ANDROID: mnt: Fix freeing of mount data (Daniel Rosenberg) [29eb328]
   * drivers: staging: Update qcacld-2.0 driver (Luca Stefani) [dfa3c86]
   * ARM: dts: 15801: Switch back to old sRGB cmds (dianlujitao) [df473c4]
-  * Bluetooth: Properly check L2CAP config option output buffer length (Ben Seri) [e7d8f89]
 
