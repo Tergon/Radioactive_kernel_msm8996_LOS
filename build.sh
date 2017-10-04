@@ -2,7 +2,7 @@
 #########################################################################################################################
 #########################################################################################################################
 # Kernel Details
-VER="_V2.0.4"
+VER="_V2.0.5"
 BASE_VER="Radioactive"
 
 # Set build folder
@@ -25,7 +25,7 @@ KERNEL_ARCH="arm64"
 KERNEL_DEFCONFIG="radioactive_defconfig"
 
 # Set kernel toolchain path
-TOOLCHAIN_DIR="${HOME}/Android/toolchains/aarch64-linux-gnu-kernel-linaro-7.x/bin/aarch64-linaro-linux-gnu-"
+TOOLCHAIN_DIR="${HOME}/Android/toolchains/ubernaro-aarch64-linux-android-4.9/bin/aarch64-linux-android-"
 
 # Set lazyflasher source git link
 LSOURCE_GIT="https://github.com/acuicultor/lazyflasher.git -b new"
