@@ -18,22 +18,6 @@
 /*
  * Change log:
  *
- * 1.3.3 (10.10.2017)
- *  - Satisfy checkpatch warnings
- *
- * 1.3.2 (08.10.2017)
- *  - Remove lcd notifier in favor of fb notifier
- *
- * 1.3.1 (06.09.2017)
- *  - Corrections of some pr_debug functions
- *
- * 1.3.0 (30.08.2017)
- *  - Adjust to stock handling, where by default display touch does not
- *	light up the touchkey lights anymore
- *
- * 1.2.0 (22.09.2016)
- *  - Change duration from seconds to milliseconds
- *
  * 1.1.0 (19.09.2016)
  *  - Add kernel controlled handling
  *
@@ -188,8 +172,7 @@ void btkc_touch_button(void)
 		qpnp_boeffla_set_button_backlight(cacheBrightness);
 
 		cancel_delayed_work(&led_work);
-		schedule_delayed_work(&led_work,
-				msecs_to_jiffies(btkc_timeout));
+		schedule_delayed_work(&led_work, msecs_to_jiffies(btkc_timeout * 1000));
 	}
 }
 
@@ -272,11 +255,7 @@ static ssize_t btkc_timeout_store(struct device *dev,
 	if ((val >= TIMEOUT_MIN) || (val <= TIMEOUT_MAX)) {
 		btkc_timeout = val;
 
-		/* temporary: help migration from seconds to milliseconds */
-		if (btkc_timeout <= 30)
-			btkc_timeout = btkc_timeout * 1000;
-
-		/* reset LED after every timeout change */
+		// reset LED after every timeout change
 		cancel_delayed_work(&led_work);
 		qpnp_boeffla_set_button_backlight(BRIGHTNESS_OFF);
 	}
