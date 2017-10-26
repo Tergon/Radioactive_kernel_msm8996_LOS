@@ -49,3 +49,4 @@ static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 #include <asm-generic/checksum.h>
 
 #endif	/* __ASM_CHECKSUM_H */
+
