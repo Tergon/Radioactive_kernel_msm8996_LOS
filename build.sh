@@ -2,7 +2,7 @@
 #########################################################################################################################
 #########################################################################################################################
 # Kernel Details
-VER="_V2.0.0"
+VER="_V2.1.8"
 BASE_VER="Radioactive"
 
 # Set build folder
@@ -15,7 +15,7 @@ BUILD_HOST_NAME="NuclearPowerPlant"
 KSOURCE_GIT="https://github.com/acuicultor/Radioactive_kernel_msm8996_LOS.git -b new"
 
 # Set kernel source folder
-KERNEL_DIR="/home/acuicultor/android/kernels/Radioactive_kernel_msm8996_LOS"
+KERNEL_DIR="/home/acuicultor/android/kernels/reborn/Radioactive_kernel_msm8996_LOS"
 ZIMAGE_DIR="$KERNEL_DIR/arch/arm64/boot" # Only change on soc/arch change ->arm64-arm etc.
 
 # Kernel Arch
@@ -25,7 +25,7 @@ KERNEL_ARCH="arm64"
 KERNEL_DEFCONFIG="radioactive_defconfig"
 
 # Set kernel toolchain path
-TOOLCHAIN_DIR="${HOME}/Android/toolchains/ubernaro-aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+TOOLCHAIN_DIR="${HOME}/Android/toolchains/aarch64-linux-gnu-kernel-linaro-7.x/bin/aarch64-linaro-linux-gnu-"
 
 # Set lazyflasher source git link
 LSOURCE_GIT="https://github.com/acuicultor/lazyflasher.git -b new"
