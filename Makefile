@@ -1,6 +1,6 @@
 VERSION = 3
 PATCHLEVEL = 18
-SUBLEVEL = 77
+SUBLEVEL = 76
 EXTRAVERSION =
 NAME = Diseased Newt
 
@@ -214,6 +214,7 @@ VPATH		:= $(srctree)$(if $(KBUILD_EXTMOD),:$(KBUILD_EXTMOD))
 
 export srctree objtree VPATH
 
+CCACHE := $(shell which ccache)
 
 # SUBARCH tells the usermode build what the underlying arch is.  That is set
 # first, and if a usermode build is happening, the "ARCH=um" on the command
@@ -295,8 +296,8 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 	  else if [ -x /bin/bash ]; then echo /bin/bash; \
 	  else echo sh; fi ; fi)
 
-HOSTCC       = gcc
-HOSTCXX      = g++
+HOSTCC       = $(CCACHE) gcc
+HOSTCXX      = $(CCACHE) g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fno-inline-functions -fomit-frame-pointer -std=gnu89
 HOSTCXXFLAGS = -O2 -fno-inline-functions -fgcse-las -pipe
 
@@ -354,7 +355,7 @@ include $(srctree)/scripts/Kbuild.include
 # Make variables (CC, etc...)
 AS		= $(CROSS_COMPILE)as
 LD		= $(CROSS_COMPILE)ld
-CC		= ccache $(CROSS_COMPILE)gcc
+CC		= $(CCACHE) $(CROSS_COMPILE)gcc
 CPP		= $(CC) -E
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
@@ -377,6 +378,7 @@ LDFLAGS_MODULE  = --strip-debug
 CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage -fno-tree-loop-im
+CFLAGS_KCOV	= -fsanitize-coverage=trace-pc
 
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
@@ -402,8 +404,13 @@ KBUILD_CFLAGS   := -Werror -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -std=gnu89
-
+		   -fgcse-sm -fsched-spec-load \
+		   -fsingle-precision-constant \
+		   -std=gnu89 \
+		   -Wno-memset-transposed-args -Wno-bool-compare -Wno-logical-not-parentheses -Wno-parentheses -Wno-discarded-array-qualifiers \
+		   -Wno-bool-operation -Wno-int-in-bool-context -Wno-switch-unreachable \
+		   -Wno-unused-const-variable -Wno-array-bounds -Wno-incompatible-pointer-types -Wno-misleading-indentation -Wno-tautological-compare -Wno-error=misleading-indentation
+		   
 # Optimization for Kryo
 KBUILD_CFLAGS	+= -mcpu=cortex-a57+crc+crypto
 
@@ -445,7 +452,7 @@ export MAKE AWK GENKSYMS INSTALLKERNEL PERL PYTHON UTS_MACHINE
 export HOSTCXX HOSTCXXFLAGS LDFLAGS_MODULE CHECK CHECKFLAGS
 
 export KBUILD_CPPFLAGS NOSTDINC_FLAGS LINUXINCLUDE OBJCOPYFLAGS LDFLAGS
-export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE CFLAGS_GCOV CFLAGS_KASAN
+export KBUILD_CFLAGS CFLAGS_KERNEL CFLAGS_MODULE CFLAGS_GCOV CFLAGS_KCOV CFLAGS_KASAN CFLAGS_UBSAN
 export KBUILD_AFLAGS AFLAGS_KERNEL AFLAGS_MODULE
 export KBUILD_AFLAGS_MODULE KBUILD_CFLAGS_MODULE KBUILD_LDFLAGS_MODULE
 export KBUILD_AFLAGS_KERNEL KBUILD_CFLAGS_KERNEL
@@ -709,6 +716,14 @@ endif
 endif
 KBUILD_CFLAGS += $(stackp-flag)
 
+ifdef CONFIG_KCOV
+  ifeq ($(call cc-option, $(CFLAGS_KCOV)),)
+    $(warning Cannot use CONFIG_KCOV: \
+             -fsanitize-coverage=trace-pc is not supported by compiler)
+    CFLAGS_KCOV =
+  endif
+endif
+
 ifeq ($(COMPILER),clang)
 KBUILD_CPPFLAGS += $(call cc-option,-Qunused-arguments,)
 KBUILD_CPPFLAGS += $(call cc-option,-Wno-unknown-warning-option,)
@@ -832,6 +847,9 @@ LDFLAGS_vmlinux += $(LDFLAGS_BUILD_ID)
 ifeq ($(CONFIG_STRIP_ASM_SYMS),y)
 LDFLAGS_vmlinux	+= $(call ld-option, -X,)
 endif
+
+LDFLAGS_vmlinux += $(call ld-option, --fix-cortex-a53-843419)
+LDFLAGS_MODULE += $(call ld-option, --fix-cortex-a53-843419)
 
 # Default kernel image to build when no specific target is given.
 # KBUILD_IMAGE may be overruled on the command line or
