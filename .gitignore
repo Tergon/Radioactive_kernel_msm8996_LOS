@@ -32,6 +32,7 @@ modules.builtin
 *.lzo
 # *.patch
 *.gcno
+*.zip
 
 #
 # Top-level generic files
@@ -87,3 +88,6 @@ GTAGS
 
 # Generated source files
 smd_rpc_sym.c
+
+# Kernel compilation output directory
+out/
