@@ -16,10 +16,10 @@ DEFCONFIG="radioactive_defconfig"
 KERNEL="Image.gz-dtb"
 
 # Caesium Kernel Details
-KERNEL_NAME="Radioactive"
-INCREMENTAL_VERSION="Radioactive-V2.2.2"
-export LOCALVERSION=-${INCREMENTAL_VERSION}
-DEVICE="oneplus3"
+KERNEL_NAME="~Radioactive"
+INCREMENTAL_VERSION="V2.2.2"
+export LOCALVERSION="${KERNEL_NAME}-${INCREMENTAL_VERSION}"
+DEVICE="oneplus3-3T"
 FINAL_VER="${KERNEL_NAME}-${DEVICE}-${INCREMENTAL_VERSION}"
 
 # Vars
